@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rihaal Mobile - Full Screen Fix</title>
+    <style>
+        /* --- PHONE FRAME STYLES --- */
+        body { background-color: #ffffff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; font-family: 'Times New Roman', Times, serif; }
+        .iphone-mini { width: 300px; height: 650px; background: #1a1a1a; border-radius: 40px; padding: 10px; position: relative; box-shadow: 0 30px 80px rgba(0,0,0,0.15); border: 2px solid #333; }
+        .screen { width: 100%; height: 100%; background: #fff; border-radius: 32px; overflow: hidden; display: flex; flex-direction: column; position: relative; }
+        .dynamic-island { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); width: 80px; height: 18px; background: black; border-radius: 20px; z-index: 1000; }
+        
+        /* --- UI COMPONENTS --- */
+        .status-bar { height: 30px; background: #5D2E0A; color: #F5DEB3; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 10px; z-index: 999; }
+        
+        /* The app-view now ensures the background is white and fills the space */
+        .app-view { flex: 1; overflow-y: auto; background: white; padding-bottom: 60px; display: flex; flex-direction: column; }
+        
+        header { background: #5D2E0A; color: #F5DEB3; padding: 15px; text-align: center; border-bottom: 4px solid #D2B48C; }
+        
+        .menu-bar { position: absolute; bottom: 0; width: 100%; background: #D2B48C; display: flex; justify-content: space-around; padding: 10px 0; border-top: 2px solid #5D2E0A; z-index: 1001; }
+        .menu-bar button { background: none; border: none; color: #5D2E0A; font-weight: bold; font-size: 10px; cursor: pointer; }
+
+        /* --- THE FIX: This container now fills 100% of the screen height --- */
+        .container { 
+            padding: 15px; 
+            background: white; 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column;
+            min-height: 100%; 
+            box-sizing: border-box;
+        }
+
+        .page { display: none; width: 100%; flex: 1; }
+        .active { display: flex; flex-direction: column; }
+        
+        .btn { background: #8B4513; color: white; padding: 10px; border: none; border-radius: 4px; font-weight: bold; width: 100%; font-size: 11px; margin-top: 10px; cursor: pointer; }
+        .btn-cancel { background: #b22222; }
+        
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 9px; }
+        th, td { border: 1px solid #ddd; padding: 6px 4px; text-align: left; }
+        th { background-color: #5D2E0A; color: white; }
+        input, select { width: 95%; padding: 8px; margin: 5px 0; border: 1px solid #ddd; border-radius: 4px; font-size: 11px; }
+
+        /* --- LANDING PAGE --- */
+        .landing-content { 
+            text-align: center; 
+            justify-content: center; 
+            align-items: center; 
+            flex: 1;
+        }
+        .logo-main { width: 180px; height: auto; margin-bottom: 15px; }
+        .slogan { font-style: italic; color: #5D2E0A; font-size: 13px; margin-bottom: 30px; line-height: 1.5; text-align: center; }
+        
+        /* Matching Brown Button */
+        .btn-start { 
+            background-color: #5D2E0A; 
+            color: #F5DEB3; 
+            border-radius: 25px; 
+            padding: 15px 40px; 
+            font-size: 14px; 
+            border: none; 
+            cursor: pointer; 
+            font-weight: bold; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="iphone-mini">
+    <div class="dynamic-island"></div>
+    <div class="screen">
+        <div class="status-bar"><span>12:00</span><span>📶 🔋</span></div>
+
+        <div class="app-view">
+            
+            <div id="page-start" class="page active">
+                <div class="container landing-content">
+                    <img src="logo.jpeg" alt="Rihaal Logo" class="logo-main">
+                    <p class="slogan">From sand to city — your journey begins with Rihaal.</p>
+                    <button class="btn-start" onclick="ui.showPage('page-login')">GET STARTED</button>
+                </div>
+            </div>
+
+            <div id="page-login" class="page">
+                <header><h1>RIHAAL | رحال</h1></header>
+                <div class="container">
+                    <div id="section-signin" style="width: 100%;">
+                        <img src="logo.jpeg" style="width: 60px; display: block; margin: 0 auto 10px;">
+                        <h2 style="text-align: center;">Login</h2>
+                        <input type="text" id="login-user" placeholder="Username">
+                        <input type="password" id="login-pass" placeholder="Password">
+                        <button class="btn" onclick="backend.login()">Login</button>
+                        <p style="font-size: 11px; text-align: center;">Don't have an account? <a href="#" onclick="ui.toggleAuth(true)">Sign Up</a></p>
+                    </div>
+                    <div id="section-signup" style="display:none; width: 100%;">
+                        <h2 style="text-align: center;">Sign Up</h2>
+                        <input type="text" id="reg-name" placeholder="Full Name">
+                        <input type="email" id="reg-email" placeholder="Email">
+                        <input type="text" id="reg-user" placeholder="Username">
+                        <input type="password" id="reg-pass" placeholder="Password">
+                        <select id="reg-role"><option value="user">User</option><option value="admin">Admin</option></select>
+                        <button class="btn" onclick="backend.signup()">Create Account</button>
+                        <p style="font-size: 11px; text-align: center;"><a href="#" onclick="ui.toggleAuth(false)">Back to Login</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="page-stations" class="page">
+                <header><h1>RIHAAL | رحال</h1></header>
+                <div class="container">
+                    <h3>Available Trains</h3>
+                    <input type="text" id="station-search" placeholder="Search route..." onkeyup="ui.filterStations()" style="width: 100%;">
+                    <table>
+                        <thead><tr><th>No.</th><th>Route</th><th>Time</th><th>Price</th><th>Action</th></tr></thead>
+                        <tbody id="station-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="page-payment" class="page">
+                <header><h1>RIHAAL | رحال</h1></header>
+                <div class="container">
+                    <h3>Secure Payment</h3>
+                    <div id="payment-summary" style="background:#F5DEB3; padding:10px; border-radius:5px; margin-bottom:10px; font-size:10px;"></div>
+                    <label style="font-size: 10px;">Cardholder Name</label>
+                    <input type="text" id="pay-name" placeholder="Letters only">
+                    <label style="font-size: 10px;">16-Digit Card Number</label>
+                    <input type="text" id="pay-card" placeholder="Numbers only" maxlength="16">
+                    <label style="font-size: 10px;">3-Digit CVV</label>
+                    <input type="text" id="pay-cvv" placeholder="123" maxlength="3">
+                    <button class="btn" onclick="backend.processPayment()">Complete Payment</button>
+                    <button class="btn btn-cancel" onclick="ui.showPage('page-stations')">Cancel</button>
+                </div>
+            </div>
+
+            <div id="page-tickets" class="page">
+                <header><h1>RIHAAL | رحال</h1></header>
+                <div class="container">
+                    <h3>My Tickets</h3>
+                    <div id="tickets-list"></div>
+                </div>
+            </div>
+
+            <div id="page-profile" class="page">
+                <header><h1>RIHAAL | رحال</h1></header>
+                <div class="container">
+                    <h3>My Account</h3>
+                    <div id="profile-info">
+                        <p><strong>Username:</strong> <span id="disp-username"></span></p>
+                        <p><strong>Name:</strong> <span id="disp-name"></span></p>
+                        <button class="btn">Edit Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-bar" id="app-menu" style="display:none;">
+            <button onclick="ui.showPage('page-stations')">Trains</button>
+            <button onclick="ui.showPage('page-tickets')">Tickets</button>
+            <button onclick="ui.showPage('page-profile')">Profile</button>
+            <button onclick="backend.logout()" style="color: #b22222;">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const backend = {
+        users: [{ username: "admin", pass: "1234", name: "Admin User", role: "admin" }],
+        currentUser: null,
+        reservedTickets: [],
+        pendingTicket: null,
+
+        signup: function() {
+            const u = document.getElementById('reg-user').value;
+            const p = document.getElementById('reg-pass').value;
+            const n = document.getElementById('reg-name').value;
+            const r = document.getElementById('reg-role').value;
+            if (!u || !p) return alert("Fill all fields");
+            this.users.push({ username: u, pass: p, name: n, role: r });
+            alert("Signed up successfully!");
+            ui.toggleAuth(false);
+        },
+
+        login: function() {
+            const u = document.getElementById('login-user').value;
+            const p = document.getElementById('login-pass').value;
+            const found = this.users.find(user => user.username === u && user.pass === p);
+            if (found) {
+                this.currentUser = found;
+                document.getElementById('app-menu').style.display = 'flex';
+                ui.updateProfileUI();
+                ui.showPage('page-stations');
+                ui.loadStations();
+            } else { alert("Wrong username or password"); }
+        },
+
+        logout: function() {
+            this.currentUser = null;
+            document.getElementById('app-menu').style.display = 'none';
+            ui.showPage('page-start');
+        },
+
+        reserve: function(train, price) {
+            this.pendingTicket = { train, price };
+            ui.showPayment(train, price);
+        },
+
+        processPayment: function() {
+            const name = document.getElementById('pay-name').value;
+            const card = document.getElementById('pay-card').value;
+            const cvv = document.getElementById('pay-cvv').value;
+
+            if (!/^[A-Za-z\s]+$/.test(name)) return alert("Error: Name must contain only letters!");
+            if (!/^[0-9]{16}$/.test(card)) return alert("Error: Card must be exactly 16 numbers!");
+            if (!/^[0-9]{3}$/.test(cvv)) return alert("Error: CVV must be 3 numbers!");
+
+            this.reservedTickets.push(this.pendingTicket);
+            alert("Payment Successful! Ticket Issued.");
+            ui.showPage('page-tickets');
+            ui.renderTickets();
+        }
+    };
+
+    const ui = {
+        stations: [
+            { id: "S-101", route: "Riyadh - Dammam", time: "08:00", price: 120 },
+            { id: "S-202", route: "Jeddah - Madinah", time: "10:30", price: 150 },
+            { id: "S-303", route: "Makkah - Jeddah", time: "13:00", price: 60 },
+            { id: "S-404", route: "Hail - Riyadh", time: "15:45", price: 210 },
+            { id: "S-505", route: "Tabuk - Madinah", time: "18:20", price: 180 },
+            { id: "S-606", route: "Abha - Jazan", time: "20:00", price: 95 },
+            { id: "S-707", route: "Al-Jawf - Hail", time: "22:15", price: 110 }
+        ],
+
+        showPage: function(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        },
+
+        toggleAuth: function(isSignup) {
+            document.getElementById('section-signin').style.display = isSignup ? 'none' : 'block';
+            document.getElementById('section-signup').style.display = isSignup ? 'block' : 'none';
+        },
+
+        loadStations: function() {
+            document.getElementById('station-body').innerHTML = this.stations.map(s => `
+                <tr><td>${s.id}</td><td>${s.route}</td><td>${s.time}</td><td>${s.price} SAR</td>
+                <td><button onclick="backend.reserve('${s.route}', ${s.price})">Book</button></td></tr>
+            `).join('');
+        },
+
+        filterStations: function() {
+            const val = document.getElementById('station-search').value.toLowerCase();
+            document.querySelectorAll('#station-body tr').forEach(row => {
+                row.style.display = row.innerText.toLowerCase().includes(val) ? "" : "none";
+            });
+        },
+
+        showPayment: function(train, price) {
+            this.showPage('page-payment');
+            document.getElementById('payment-summary').innerHTML = `<b>Route:</b> ${train}<br><b>Amount:</b> ${price} SAR`;
+        },
+
+        renderTickets: function() {
+            const list = document.getElementById('tickets-list');
+            if (backend.reservedTickets.length === 0) return list.innerHTML = "No tickets.";
+            list.innerHTML = backend.reservedTickets.map(t => `
+                <div style="border:1px solid #ddd; padding:8px; margin-bottom:5px; font-size:11px; background: #fff;">
+                    <strong>${t.train}</strong><br>Confirmed: SAR ${t.price}
+                </div>`).join('');
+        },
+
+        updateProfileUI: function() {
+            document.getElementById('disp-username').innerText = backend.currentUser.username;
+            document.getElementById('disp-name').innerText = backend.currentUser.name;
+        }
+    };
+</script>
+</body>
+</html>
+    
+           
